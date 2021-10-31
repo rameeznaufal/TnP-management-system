@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS User (
     contact VARCHAR(30),
     cgpa FLOAT(4,2),
     plac_stat VARCHAR(50) DEFAULT "NOT PLACED",
-    plac_comp VARCHAR(255),
+    plac_comp VARCHAR(255) DEFAULT "",
     plac_officer BOOLEAN DEFAULT false
 );
 

@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.nitc.tnpmanagement.model.User;
+
 public class UserDAO {
 	env_var UserName = env_var.RootUserMySQL, Password = env_var.RootPasswordMySQL;
 	private String jdbcURL = "jdbc:mysql://localhost:3306/tnp_managemnet_sys?useSSL=false";
@@ -17,13 +19,12 @@ public class UserDAO {
     
     public UserDAO() {}
     
-    private static final String INSERT_USERS_SQL = "INSERT INTO user" + "  (name, email, country) VALUES "
-			+ " (?, ?, ?);";
-
-	private static final String SELECT_USER_BY_ID = "select id,name,email,country from users where id =?";
-	private static final String SELECT_ALL_USERS = "select * from users";
-	private static final String DELETE_USERS_SQL = "delete from users where id = ?;";
-	private static final String UPDATE_USERS_SQL = "update users set name = ?,email= ?, country =? where id = ?;";
+    private static final String INSERT_USERS_SQL = "INSERT INTO user" + " (name,regNo,email,password,contact,cgpa,plac_officer) VALUES " + " (?, ?, ?, ?, ?, ?, 0);";
+	private static final String SELECT_USER_BY_REGNO_AND_PWD = "SELECT * FROM user WHERE regNo = ? AND password = ?";
+	private static final String SELECT_ALL_USERS = "SELECT * FROM user ORDER BY name";
+	private static final String DELETE_USERS_SQL = "DELETE FROM user WHERE id = ?;";
+	private static final String UPDATE_USERS_SQL = "UPDATE user SET name = ? ,regNo = ? ,email = ? ,password = ?,contact = ?,cgpa = ? WHERE id = ?;";
+	private static final String ASSIGN_USERS_SQL = "UPDATE user SET plac_stat = ? ,plac_comp = ? where id = ?;";
 
 	protected Connection getConnection() {
 		Connection connection = null;
@@ -40,14 +41,18 @@ public class UserDAO {
 		return connection;
 	}
 
-	public void insertUser(User user) throws SQLException {
+	public void registerUser(User user) throws SQLException {
 		System.out.println(INSERT_USERS_SQL);
 		// try-with-resource statement will auto close the connection.
 		try (Connection connection = getConnection();
-				PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
+				PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL);) {
 			preparedStatement.setString(1, user.getName());
-			preparedStatement.setString(2, user.getEmail());
-			preparedStatement.setString(3, user.getCountry());
+			preparedStatement.setString(2, user.getRegNo());
+			preparedStatement.setString(3, user.getEmail());
+			preparedStatement.setString(4, user.getPassword());
+			preparedStatement.setString(5, user.getPhNo());
+			preparedStatement.setFloat(6, user.getCgpa());
+			
 			System.out.println(preparedStatement);
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
@@ -55,50 +60,67 @@ public class UserDAO {
 		}
 	}
 
-	public User selectUser(int id) {
+	public User loginUser(String regNo, String password) {
 		User user = null;
-		// Step 1: Establishing a Connection
+		int FLAG = 0;
+		
 		try (Connection connection = getConnection();
-				// Step 2:Create a statement using connection object
-				PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_ID);) {
-			preparedStatement.setInt(1, id);
+	      		PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_REGNO_AND_PWD);) {
+			
+			preparedStatement.setString(1, regNo);
+			preparedStatement.setString(2, password);	
 			System.out.println(preparedStatement);
-			// Step 3: Execute the query or update query
+		
 			ResultSet rs = preparedStatement.executeQuery();
 
-			// Step 4: Process the ResultSet object.
 			while (rs.next()) {
+				FLAG = 1;
+				int id = rs.getInt("id");
 				String name = rs.getString("name");
 				String email = rs.getString("email");
-				String country = rs.getString("country");
-				user = new User(id, name, email, country);
+				String contact = rs.getString("contact");
+				float cgpa = rs.getFloat("cgpa");
+				String placStat  = rs.getString("plac_stat");
+				String placComp = rs.getString("plac_comp");
+				int isPlacOff = rs.getInt("plac_officer");
+				
+				user = new User(id,name,regNo,email,password,contact,cgpa,placStat,placComp,isPlacOff);
+			}
+			if(FLAG==0) {
+				user = new User();
+				user.setId(-1);
+				return user;
 			}
 		} catch (SQLException e) {
+			user = new User();
+			user.setId(-1);
 			printSQLException(e);
+			return user;
 		}
 		return user;
 	}
 
 	public List<User> selectAllUsers() {
-
-		// using try-with-resources to avoid closing resources (boiler plate code)
 		List<User> users = new ArrayList<>();
-		// Step 1: Establishing a Connection
+		
 		try (Connection connection = getConnection();
-
-				// Step 2:Create a statement using connection object
 			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_USERS);) {
+			
 			System.out.println(preparedStatement);
-			// Step 3: Execute the query or update query
+		
 			ResultSet rs = preparedStatement.executeQuery();
-
-			// Step 4: Process the ResultSet object.
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				String name = rs.getString("name");
+				String regNo = rs.getString("regNo");
 				String email = rs.getString("email");
-				String country = rs.getString("country");
-				users.add(new User(id, name, email, country));
+				String password = rs.getString("password");
+				String contact = rs.getString("contact");
+				float cgpa = rs.getFloat("cgpa");
+				String placStat  = rs.getString("plac_stat");
+				String placComp = rs.getString("plac_comp");
+				int isPlacOff = rs.getInt("plac_officer");
+				users.add(new User(id,name,regNo,email,password,contact,cgpa,placStat,placComp,isPlacOff));
 			}
 		} catch (SQLException e) {
 			printSQLException(e);
@@ -106,6 +128,7 @@ public class UserDAO {
 		return users;
 	}
 
+	//not implemented
 	public boolean deleteUser(int id) throws SQLException {
 		boolean rowDeleted;
 		try (Connection connection = getConnection();
@@ -117,15 +140,34 @@ public class UserDAO {
 	}
 
 	public boolean updateUser(User user) throws SQLException {
-		boolean rowUpdated;
+		boolean rowUpdated = false;
 		try (Connection connection = getConnection();
-				PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);) {
-			statement.setString(1, user.getName());
-			statement.setString(2, user.getEmail());
-			statement.setString(3, user.getCountry());
-			statement.setInt(4, user.getId());
-
-			rowUpdated = statement.executeUpdate() > 0;
+				PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_USERS_SQL);) {
+			
+			//"UPDATE user SET name = ? ,regNo = ? ,email = ? ,password = ?,contact = ?,cgpa = ? WHERE id = ?"
+			preparedStatement.setString(1, user.getName());
+			preparedStatement.setString(2, user.getRegNo());
+			preparedStatement.setString(3, user.getEmail());
+			preparedStatement.setString(4, user.getPassword());
+			preparedStatement.setString(5, user.getPhNo());
+			preparedStatement.setFloat(6, user.getCgpa());
+			preparedStatement.setInt(7, user.getId());
+		
+			rowUpdated = preparedStatement.executeUpdate() > 0;
+		}
+		return rowUpdated;
+	}
+	
+	public boolean assignUser(User user) throws SQLException {
+		boolean rowUpdated = false;
+		try (Connection connection = getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(ASSIGN_USERS_SQL);) {
+			
+			preparedStatement.setString(1, user.getPlacStat());
+			preparedStatement.setString(2, user.getPlacComp());
+			preparedStatement.setInt(3, user.getId());
+		
+			rowUpdated = preparedStatement.executeUpdate() > 0;
 		}
 		return rowUpdated;
 	}
