@@ -4,9 +4,6 @@ public class User_company {
 	private int u_id;
 	private int c_id;
 	
-	
-	
-	
 	public User_company() {	}
 
 	public User_company(int u_id, int c_id) {
@@ -27,6 +24,5 @@ public class User_company {
 	public void setC_id(int c_id) {
 		this.c_id = c_id;
 	}
-	
-	
+		
 }

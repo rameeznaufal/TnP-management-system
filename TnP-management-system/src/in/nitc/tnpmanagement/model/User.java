@@ -8,7 +8,32 @@ public class User {
 	private float cgpa;
 	private String placStat;
 	private String placComp;
-	private boolean placOff;
+	private int isPlacOff;
+	
+	public User() {}
+	
+	public User(String regNo, String email, String phNo, float cgpa, String placStat, String placComp, int isPlacOff) {
+		super();
+		this.regNo = regNo;
+		this.email = email;
+		this.phNo = phNo;
+		this.cgpa = cgpa;
+		this.placStat = placStat;
+		this.placComp = placComp;
+		this.isPlacOff = isPlacOff;
+	}
+
+	public User(int id, String regNo, String email, String phNo, float cgpa, String placStat, String placComp,  int isPlacOff) {
+		super();
+		this.id = id;
+		this.regNo = regNo;
+		this.email = email;
+		this.phNo = phNo;
+		this.cgpa = cgpa;
+		this.placStat = placStat;
+		this.placComp = placComp;
+		this.isPlacOff = isPlacOff;
+	}
 	
 	public int getId() {
 		return id;
@@ -52,21 +77,12 @@ public class User {
 	public void setPlacComp(String placComp) {
 		this.placComp = placComp;
 	}
-	public boolean isPlacOff() {
-		return placOff;
+	public int getIsPlacOff() {
+		return isPlacOff;
 	}
-	public void setPlacOff(int placOff) {
-		
-		if (input < 0 || input > 1)
-		   {
-		      throw new IllegalArgumentException("input must be 0 or 1");
-		   }
 
-		   // Note we designate 1 as true and 0 as false though some may disagree
-		   return input == 1;
-		this.placOff = placOff;
+	public void setIsPlacOff(int isPlacOff) {
+		this.isPlacOff = isPlacOff;
 	}
 	
-	
-
 }
