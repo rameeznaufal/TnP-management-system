@@ -20,12 +20,13 @@ public class UserDAO {
     public UserDAO() {}
     
     private static final String INSERT_USERS_SQL = "INSERT INTO user" + " (name,regNo,email,password,contact,cgpa,plac_officer) VALUES " + " (?, ?, ?, ?, ?, ?, 0);";
-	private static final String SELECT_USER_BY_REGNO_AND_PWD = "SELECT * FROM user WHERE regNo = ? AND password = ?";
-	private static final String SELECT_ALL_USERS = "SELECT * FROM user ORDER BY name";
+	private static final String SELECT_USER_BY_REGNO_AND_PWD = "SELECT * FROM user WHERE regNo = ? AND password = ?;";
+	private static final String SELECT_ALL_STUDENTS = "SELECT * FROM user WHERE plac_officer = 0 ORDER BY name;";
 	private static final String DELETE_USERS_SQL = "DELETE FROM user WHERE id = ?;";
 	private static final String UPDATE_USERS_SQL = "UPDATE user SET name = ? ,regNo = ? ,email = ? ,password = ?,contact = ?,cgpa = ? WHERE id = ?;";
 	private static final String ASSIGN_USERS_SQL = "UPDATE user SET plac_stat = ? ,plac_comp = ? where id = ?;";
-
+	private static final String SELECT_USER_BY_ID = "SELECT * FROM User WHERE id = ?;";
+	
 	protected Connection getConnection() {
 		Connection connection = null;
 		try {
@@ -60,7 +61,43 @@ public class UserDAO {
 		}
 	}
 
-	public User loginUser(String regNo, String password) {
+	public User selectUser(int id) throws SQLException {
+		User user = null;
+		int FLAG = 0;
+		
+		try (Connection connection = getConnection();
+	      		PreparedStatement preparedStatement = connection.prepareStatement( SELECT_USER_BY_ID );) {
+			
+			preparedStatement.setInt(1, id);
+			System.out.println(preparedStatement);
+		
+			ResultSet rs = preparedStatement.executeQuery();
+
+			while (rs.next()) {
+				FLAG = 1;
+				String name = rs.getString("name");
+				String regNo = rs.getString("regNo");
+				String email = rs.getString("email");
+				String password = rs.getString("password");
+				String contact = rs.getString("contact");
+				float cgpa = rs.getFloat("cgpa");
+				String placStat  = rs.getString("plac_stat");
+				String placComp = rs.getString("plac_comp");
+				int isPlacOff = rs.getInt("plac_officer");
+				
+				user = new User(id,name,regNo,email,password,contact,cgpa,placStat,placComp,isPlacOff);
+			}
+			if(FLAG==0) {
+				throw new SQLException("Missing Data Input");
+			}
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+		return user;
+	}
+
+	
+	public User loginUser(String regNo, String password) throws SQLException {
 		User user = null;
 		int FLAG = 0;
 		
@@ -100,11 +137,11 @@ public class UserDAO {
 		return user;
 	}
 
-	public List<User> selectAllUsers() {
+	public List<User> selectAllStudents() throws SQLException{
 		List<User> users = new ArrayList<>();
 		
 		try (Connection connection = getConnection();
-			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_USERS);) {
+			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_STUDENTS);) {
 			
 			System.out.println(preparedStatement);
 		

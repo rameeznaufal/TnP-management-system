@@ -6,6 +6,7 @@ public class Company {
 	private String role;
 	private String ctc;
 	private String loc;
+	private boolean applied;
 	
 	public Company() {}
 
@@ -27,6 +28,14 @@ public class Company {
 		this.loc = loc;
 	}
 
+
+	public boolean isApplied() {
+		return applied;
+	}
+
+	public void setApplied(boolean applied) {
+		this.applied = applied;
+	}
 
 	public int getId() {
 		return id;

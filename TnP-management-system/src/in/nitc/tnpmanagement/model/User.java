@@ -1,6 +1,10 @@
 package in.nitc.tnpmanagement.model;
 
-public class User {
+public class User implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2320128442063590437L;
 	private int id;
 	private String name;
 	private String regNo;
@@ -12,7 +16,9 @@ public class User {
 	private String placComp;
 	private int isPlacOff;
 	
-	public User() {}
+	public User() {
+		super();
+	}
 	
 	public User(String name, String regNo, String email, String password, String phNo, float cgpa, String placStat, String placComp, int isPlacOff) {
 		super();

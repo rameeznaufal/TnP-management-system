@@ -26,6 +26,7 @@ public class CompanyDAO {
     private static final String CHECK_IF_APPLIED = "SELECT * FROM user_company WHERE user_id = ? AND company_id = ?;";
     private static final String DELETE_COMPANY = "DELETE FROM Company WHERE id = ?;";
     private static final String UPDATE_COMPANY = "UPDATE Company SET name = ?, role = ?, ctc = ?, locat = ? WHERE id = ?;";
+    private static final String SELECT_COMPANY_BY_ID = "SELECT * FROM Company WHERE id = ?;";
     
     protected Connection getConnection() {
 		Connection connection = null;
@@ -57,6 +58,30 @@ public class CompanyDAO {
 		} catch (SQLException e) {
 			printSQLException(e);
 		}
+	}
+	
+	public Company selectCompany(int id) {
+		Company company = null;
+		
+		try (Connection connection = getConnection();
+			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_COMPANY_BY_ID);) {
+			preparedStatement.setInt(1, id);
+			
+			System.out.println(preparedStatement);
+		
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString("name");
+				String role = rs.getString("role");
+				String ctc = rs.getString("ctc");
+				String locat = rs.getString("locat");
+				
+				company = new Company(id, name , role, ctc, locat);
+			}
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+		return company;
 	}
 	
 	public List<Company> selectAllCompany() {
