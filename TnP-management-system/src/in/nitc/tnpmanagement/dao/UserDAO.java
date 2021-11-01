@@ -12,7 +12,7 @@ import in.nitc.tnpmanagement.model.User;
 
 public class UserDAO {
 	env_var UserName = env_var.RootUserMySQL, Password = env_var.RootPasswordMySQL;
-	private String jdbcURL = "jdbc:mysql://localhost:3306/tnp_managemnet_sys?useSSL=false";
+	private String jdbcURL = "jdbc:mysql://localhost:3306/tnp_management_sys?useSSL=false";
     private String jdbcUsername = UserName.value;
     private String jdbcPassword = Password.value;
     
@@ -31,6 +31,7 @@ public class UserDAO {
 		Connection connection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
+			//System.out.println()
 			connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.nitc.tnpmanagement.model.Company;
+import in.nitc.tnpmanagement.model.User;
 import in.nitc.tnpmanagement.model.User_company;
 
 
 public class CompanyDAO {
 	env_var UserName = env_var.RootUserMySQL, Password = env_var.RootPasswordMySQL;
-	private String jdbcURL = "jdbc:mysql://localhost:3306/tnp_managemnet_sys?useSSL=false";
+	private String jdbcURL = "jdbc:mysql://localhost:3306/tnp_management_sys?useSSL=false";
     private String jdbcUsername = UserName.value;
     private String jdbcPassword = Password.value;
     
@@ -27,6 +28,8 @@ public class CompanyDAO {
     private static final String DELETE_COMPANY = "DELETE FROM Company WHERE id = ?;";
     private static final String UPDATE_COMPANY = "UPDATE Company SET name = ?, role = ?, ctc = ?, locat = ? WHERE id = ?;";
     private static final String SELECT_COMPANY_BY_ID = "SELECT * FROM Company WHERE id = ?;";
+    private static final String SELECT_APPLIED_STUDENTS = "SELECT * FROM User u WHERE u.id IN (SELECT uc.user_id FROM user_company uc WHERE uc.company_id = ?);";
+    
     
     protected Connection getConnection() {
 		Connection connection = null;
@@ -42,6 +45,34 @@ public class CompanyDAO {
 		}
 		return connection;
 	}
+    
+    public List<User> selectAppliedStudents(int c_id) throws SQLException {
+        List<User> users = new ArrayList<>();
+		
+		try (Connection connection = getConnection();
+			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_APPLIED_STUDENTS);) {
+			preparedStatement.setInt(1,c_id);
+			System.out.println(preparedStatement);
+		
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String name = rs.getString("name");
+				String regNo = rs.getString("regNo");
+				String email = rs.getString("email");
+				String password = rs.getString("password");
+				String contact = rs.getString("contact");
+				float cgpa = rs.getFloat("cgpa");
+				String placStat  = rs.getString("plac_stat");
+				String placComp = rs.getString("plac_comp");
+				int isPlacOff = rs.getInt("plac_officer");
+				users.add(new User(id,name,regNo,email,password,contact,cgpa,placStat,placComp,isPlacOff));
+			}
+		} catch (SQLException e) {
+			printSQLException(e);
+		}
+		return users;
+    }
     
 	public void registerCompany(Company company) throws SQLException {
 		System.out.println(INSERT_COMPANY_SQL);

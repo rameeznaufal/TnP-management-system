@@ -1,0 +1,149 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	color: aliceblue;
+	
+}
+
+body {
+	overflow:hidden;
+}
+
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 15px;
+  background-color: rgba(196, 194, 194, 0.644);
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(236, 239, 243, 0.712);
+  width: 5px;
+}
+
+html {
+	height: 100%;
+}
+
+.form-center p {
+	color: rgb(65, 131, 68);
+	font-size: 2.4rem;
+}
+
+.navitems {
+	align-items: right;
+}
+
+.header {
+	color:white;
+	font-size: 1.8rem;
+}
+
+.navbar-brand {
+	 font-weight: 200;
+  letter-spacing: 1.1px;
+  font-size: 1.5em;
+}
+
+.list-group{
+    height:500px;
+    overflow-y:scroll;
+    margin-top:0px;
+	border-radius: 14px;
+	background-color: rgb(212, 212, 212);
+	
+	padding-top: 0px;
+	margin-left: 170px;
+	margin-right: 170px;
+	
+}
+
+.sdpv {
+	position:inline;
+	color:rgb(39, 128, 24);
+	font:1.8rem;
+	font-style:italic;
+
+}
+
+.sd {
+	margin-top:100px;
+	margin-left: 170px;
+	justify-items:right;
+}
+
+.sdp {
+	font-size:2rem;
+	font-weight: 200;
+	color:black;
+	margin-bottom: 2px;
+}
+
+.item {
+	border: 5px;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.74);
+	padding-bottom: 1px;
+}
+
+.form-center {
+	width: auto;
+	padding: 9px;
+	margin: auto;
+	padding-top: 10rem;
+	font-size: 1.7rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-width: 70vw;
+}
+
+.apply{
+	color: rgb(255, 255, 255);
+	text-decoration: none;
+}
+
+
+.but {
+ font-size: 1.3rem;
+	padding-top: 2px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 5px;
+	background: rgb(150, 250, 125);	
+}
+
+.applied {
+	color:rgb(29, 28, 28);
+	margin:auto;
+}
+
+.btn {
+	
+	font-size: 1.3rem;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	padding-left: 10px;
+	padding-right: 1opx;
+	border-radius: 5px;
+	background: rgb(56, 47, 47);
+}
+
+.half {
+	max-width: 600px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	text-align: center;
+}

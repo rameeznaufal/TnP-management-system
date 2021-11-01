@@ -1,0 +1,45 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+	color: aliceblue;
+}
+
+html {
+	height: 100%;
+}
+
+.form-center p {
+	color: rgb(65, 131, 68);
+	font-size: 2.4rem;
+}
+
+.form-center {
+	width: auto;
+	padding: 9px;
+	margin: auto;
+	padding-top: 10rem;
+	font-size: 1.7rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-width: 70vw;
+}
+
+.btn {
+	font-size: 1.5rem;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 15px;
+	padding-right: 15px;
+	border-radius: 10px;
+}
+
+.half {
+	max-width: 600px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	text-align: center;
+}

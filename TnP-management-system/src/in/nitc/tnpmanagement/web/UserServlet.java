@@ -59,6 +59,9 @@ public class UserServlet extends HttpServlet {
 					// userEntry(request, response);
 				}
 				break;
+			case "/add-company":
+				addCompany(request,response);
+				break;
 			case "/login":
 				loginUser(request, response);
 				break;
@@ -102,7 +105,7 @@ public class UserServlet extends HttpServlet {
 	}	
 		
 		private void userEntry(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-			HttpSession session = request.getSession(false);
+			HttpSession session = request.getSession();
 			session.invalidate();
 			response.sendRedirect("welcomeUser.jsp");
 		}
@@ -121,7 +124,7 @@ public class UserServlet extends HttpServlet {
 			
 			HttpSession session = request.getSession();
 			session.setAttribute("sessuser", user);
-			response.sendRedirect("/home");
+			response.sendRedirect("home");
 			
 		}
 		
@@ -136,6 +139,18 @@ public class UserServlet extends HttpServlet {
 			User newUser = new User(name,regNo,email,password,phNo,cgpa,"NOT PLACED","N/A",0);
 			userDAO.registerUser(newUser);
 			response.sendRedirect("Welcome Page");
+		}
+		
+		private void addCompany(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+			String name = request.getParameter("name");
+			String role = request.getParameter("role");
+			String ctc = request.getParameter("ctc");
+			String loc = request.getParameter("loc");
+			
+			
+			Company newCompany = new Company(name,role,ctc,loc);
+			companyDAO.registerCompany(newCompany);
+			response.sendRedirect("home");
 		}
 		
 		private void viewHome(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
@@ -175,8 +190,9 @@ public class UserServlet extends HttpServlet {
 		private void showEditFormCompany(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Company existingCompany = companyDAO.selectCompany(id);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("companyForm.jsp");
 			request.setAttribute("company", existingCompany);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("companyForm.jsp");
+			
 			dispatcher.forward(request, response);		
 		}
 		
@@ -189,19 +205,21 @@ public class UserServlet extends HttpServlet {
 
 			Company company = new Company(id, name, role, ctc, loc);
 			companyDAO.updateCompany(company);
-			response.sendRedirect("/home");
+			response.sendRedirect("home");
 		}
 		
 		private void showEditFormUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 			HttpSession session = request.getSession(false);
 			User user;
 			user = (User)session.getAttribute("sessuser");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("userForm.jsp");
+			
 			request.setAttribute("user", user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("userForm.jsp");
 			dispatcher.forward(request, response);	
 		}
 		
 		private void updateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+			HttpSession session = request.getSession(false);
 			int id = Integer.parseInt(request.getParameter("id"));
 			String name = request.getParameter("name");
 			String regNo = request.getParameter("regNo");
@@ -213,7 +231,9 @@ public class UserServlet extends HttpServlet {
 
 			User user = new User(id, name, regNo, email, password, phNo, cgpa, "DOESNT MATTER", "DOESNT MATTER", 0);
 			userDAO.updateUser(user);
-			response.sendRedirect("/home");
+			User USER = userDAO.selectUser(user.getId());
+			session.setAttribute("sessuser", USER);
+			response.sendRedirect("home");
 		}
 		
 		private void applyUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
@@ -224,17 +244,39 @@ public class UserServlet extends HttpServlet {
 			int u_id = user.getId();
 			User_company company_applying = new User_company(u_id,c_id);
 			companyDAO.applyToCompany(company_applying);
-			response.sendRedirect("/home");			
+			response.sendRedirect("home");			
 		}
 		
-		private void userEntry(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-			response.sendRedirect("welcomeUser.jsp");
+		private void userLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+			response.sendRedirect("Welcome page");
 		}
-		private void userEntry(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-			response.sendRedirect("welcomeUser.jsp");
+		
+		private void showAssignForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+			int id = Integer.parseInt(request.getParameter("id"));
+			Company existingCompany = companyDAO.selectCompany(id);
+			List<User> listStudent = companyDAO.selectAppliedStudents(id);
+			
+			request.setAttribute("company", existingCompany);
+			request.setAttribute("listStudent", listStudent);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("companyAssignForm.jsp");
+			dispatcher.forward(request, response);	
 		}
-		private void userEntry(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-			response.sendRedirect("welcomeUser.jsp");
+		
+		private void assignUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+			String id[] = request.getParameterValues("id");
+			int c_id = Integer.parseInt(request.getParameter("c_id"));
+			Company company = companyDAO.selectCompany(c_id);
+			
+			for(int i=0;i<id.length;++i) {
+				int ID = Integer.parseInt(id[i]);
+				User user = userDAO.selectUser(ID);
+				user.setPlacComp(company.getName());
+				user.setPlacStat("PLACED");
+				userDAO.assignUser(user);
+			}
+			
+			companyDAO.deleteCompany(company.getId());
+			response.sendRedirect("home");
 		}
 		
 		
