@@ -42,8 +42,8 @@
     <p class="mb-0">Email: <c:out value="${user.email}"/></p>
     <p class="mb-0">CGPA: <c:out value="${user.cgpa}"/></p>
     <p class="mb-0">Phone No: <c:out value="${user.phNo}"/></p>
-    <p class="mb-0">placStat: <c:out value="${user.placStat}"/></p>
-    <p class="mb-1 mt-0">placComp: <c:out value="${user.placComp}"/></p>
+    <p class="mb-0">Placement Status: <c:out value="${user.placStat}"/></p>
+    <p class="mb-1 mt-0">Company Placed: <c:out value="${user.placComp}"/></p>
     <div class="form-check">
   <input class="form-check-input" type="checkbox" name="id" value="${user.id}" id="id"/>
   <label class="form-check-label" for="id">

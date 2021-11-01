@@ -45,9 +45,7 @@
         <div class="btn btn-dark"> <a href="<%=request.getContextPath()%>/apply?id=${company.id}" class="apply">Apply</a></div>
       </c:if>    
       </c:if>
-       <c:if test="${USER.placStat == 'PLACED' }">
-           <div class="but"><p class="applied"> ALREADY PLACED</p></div>
-       </c:if> 
+   
     </div>
     <p class="mb-1">Role: <c:out value="${company.role}"/></p>
     <p class="mb-0"><h6>CTC: <c:out value="${company.ctc}"/></h6></p>
